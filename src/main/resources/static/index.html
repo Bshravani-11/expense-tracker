@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker — Personal Finance Dashboard</title>
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Top Navigation Bar -->
+        <header class="navbar">
+            <div class="nav-container">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="brand-title">ExpenseTracker</h1>
+                        <p class="brand-subtitle">Smart Indian Rupee (INR ₹) Personal Finance</p>
+                    </div>
+                </div>
+
+                <div class="nav-actions">
+                    <div class="memory-badge" title="Data is kept in memory and resets when the backend server restarts">
+                        <span class="badge-dot"></span>
+                        <span>In-Memory Store (resets on restart)</span>
+                    </div>
+                    <button class="btn btn-primary" id="openAddModalBtn" aria-label="Add Expense">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Add Expense</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-container">
+            <!-- Monthly Salary & Savings Tracker Card -->
+            <section class="salary-card" aria-label="Monthly Salary and Savings Overview">
+                <div class="salary-header">
+                    <div class="salary-title-wrap">
+                        <div class="salary-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="salary-heading">Monthly Salary & Savings Tracker</h2>
+                            <p class="salary-subheading">Track your earnings against this month's spending</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline btn-sm salary-edit-btn" id="openSalaryModalBtn" title="Update your monthly salary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        <span>Update Salary</span>
+                    </button>
+                </div>
+
+                <div class="salary-metrics-row">
+                    <!-- Monthly Salary -->
+                    <div class="salary-metric-block">
+                        <span class="salary-metric-label">Monthly Salary</span>
+                        <div class="salary-metric-value" id="displayMonthlySalary">₹50,000.00</div>
+                        <span class="salary-metric-sub">Base monthly income</span>
+                    </div>
+
+                    <!-- Spent This Month -->
+                    <div class="salary-metric-block">
+                        <span class="salary-metric-label">Spent This Month</span>
+                        <div class="salary-metric-value text-spent" id="displaySalarySpent">₹0.00</div>
+                        <span class="salary-metric-sub" id="displaySpentPctLabel">0.0% of salary</span>
+                    </div>
+
+                    <!-- Remaining Balance / Savings -->
+                    <div class="salary-metric-block">
+                        <span class="salary-metric-label">Remaining Balance</span>
+                        <div class="salary-metric-value text-remaining" id="displayRemainingSalary">₹50,000.00</div>
+                        <div class="status-badge-wrap">
+                            <span class="salary-status-badge badge-safe" id="salaryStatusBadge">On Track</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salary Progress Bar -->
+                <div class="salary-progress-wrapper">
+                    <div class="salary-progress-bar">
+                        <div class="salary-progress-fill" id="salaryProgressFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="salary-progress-labels">
+                        <span id="salaryProgressText">₹0.00 spent of ₹50,000.00</span>
+                        <span id="salaryRemainingPctText">100% savings remaining</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Metric Summary Cards -->
+            <section class="metrics-grid" aria-label="Expense Summary Metrics">
+                <!-- Card 1: Total Expenses -->
+                <div class="metric-card metric-total">
+                    <div class="metric-header">
+                        <span class="metric-label">Total Expenses</span>
+                        <div class="metric-icon total-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                <line x1="6" y1="8" x2="6" y2="8"></line>
+                                <line x1="10" y1="8" x2="18" y2="8"></line>
+                                <line x1="6" y1="12" x2="6" y2="12"></line>
+                                <line x1="10" y1="12" x2="18" y2="12"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="totalExpenses">₹0.00</div>
+                    <div class="metric-footer">
+                        <span class="badge badge-neutral" id="totalCountBadge">0 transactions</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Today's Expenses -->
+                <div class="metric-card metric-today">
+                    <div class="metric-header">
+                        <span class="metric-label">Today's Expenses</span>
+                        <div class="metric-icon today-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="todayExpenses">₹0.00</div>
+                    <div class="metric-footer">
+                        <span class="metric-hint" id="todayDateLabel">Today</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: This Month's Expenses -->
+                <div class="metric-card metric-month">
+                    <div class="metric-header">
+                        <span class="metric-label">This Month's Expenses</span>
+                        <div class="metric-icon month-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="monthExpenses">₹0.00</div>
+                    <div class="metric-footer">
+                        <span class="metric-hint" id="currentMonthLabel">This Month</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Top Category -->
+                <div class="metric-card metric-category">
+                    <div class="metric-header">
+                        <span class="metric-label">Top Category</span>
+                        <div class="metric-icon cat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value text-truncate" id="topCategoryName">—</div>
+                    <div class="metric-footer">
+                        <span class="metric-hint" id="topCategoryAmount">₹0.00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Split: Main Table & Sidebar Summary -->
+            <div class="dashboard-grid">
+                <!-- Left Section: Transaction Table and Filter Bar -->
+                <div class="content-column">
+                    <div class="card table-card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">All Transactions</h2>
+                                <p class="card-subtitle">Manage, view, and filter your recorded expenses</p>
+                            </div>
+                            <!-- Filter Controls -->
+                            <div class="filter-controls">
+                                <div class="filter-group">
+                                    <label for="categoryFilter" class="filter-label">Filter Category:</label>
+                                    <select id="categoryFilter" class="select-input">
+                                        <option value="All">All Categories</option>
+                                        <option value="Food & Dining">🍔 Food & Dining</option>
+                                        <option value="Transportation">🚗 Transportation</option>
+                                        <option value="Shopping">🛍️ Shopping</option>
+                                        <option value="Entertainment">🎬 Entertainment</option>
+                                        <option value="Bills & Utilities">💡 Bills & Utilities</option>
+                                        <option value="Healthcare">💊 Healthcare</option>
+                                        <option value="Education">📚 Education</option>
+                                        <option value="Other">🏷️ Other</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-outline btn-sm" id="refreshBtn" title="Refresh data">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <polyline points="1 20 1 14 7 14"></polyline>
+                                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                    </svg>
+                                    <span>Refresh</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Transactions Table -->
+                        <div class="table-responsive">
+                            <table class="transaction-table" id="transactionTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Category</th>
+                                        <th class="text-right">Amount (₹)</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expensesTableBody">
+                                    <!-- Dynamic rows loaded via script.js -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Empty State Message (shown when there are no expenses) -->
+                        <div class="empty-state" id="emptyState" style="display: none;">
+                            <div class="empty-state-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <h3 class="empty-state-title" id="emptyStateTitle">No Expenses Found</h3>
+                            <p class="empty-state-text" id="emptyStateMessage">You haven't recorded any expenses yet. Start tracking your finances by adding your first expense!</p>
+                            <button class="btn btn-primary" id="emptyAddBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span>Add Your First Expense</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Category-wise Expense Summary & Quick Add -->
+                <div class="sidebar-column">
+                    <!-- Category Breakdown Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Category Summary</h2>
+                                <p class="card-subtitle">Spending breakdown by category</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Visual Progress Bar Meter -->
+                            <div class="distribution-meter" id="distributionMeter" title="Overall Distribution">
+                                <!-- Colored meter segments -->
+                            </div>
+
+                            <!-- Category Breakdown List -->
+                            <div class="category-breakdown-list" id="categoryBreakdownList">
+                                <!-- Populated dynamically -->
+                            </div>
+                            <div class="empty-category-hint" id="emptyCategoryHint" style="display: none;">
+                                No spending data to summarize.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Add Expense Card -->
+                    <div class="card quick-add-card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Quick Add Expense</h2>
+                                <p class="card-subtitle">Directly record a new transaction</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form id="quickAddForm" novalidate>
+                                <div class="form-group">
+                                    <label for="quickDescription">Description <span class="required">*</span></label>
+                                    <input type="text" id="quickDescription" class="form-control" placeholder="e.g. Swiggy lunch order" required minlength="2" maxlength="150">
+                                    <span class="field-error" id="quickDescError"></span>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-half">
+                                        <label for="quickAmount">Amount (INR ₹) <span class="required">*</span></label>
+                                        <div class="currency-input-wrapper">
+                                            <span class="currency-prefix">₹</span>
+                                            <input type="number" id="quickAmount" class="form-control with-prefix" placeholder="0.00" min="0.01" step="0.01" required>
+                                        </div>
+                                        <span class="field-error" id="quickAmountError"></span>
+                                    </div>
+                                    <div class="form-group col-half">
+                                        <label for="quickCategory">Category <span class="required">*</span></label>
+                                        <select id="quickCategory" class="form-control" required>
+                                            <option value="">Select category...</option>
+                                            <option value="Food & Dining">Food & Dining</option>
+                                            <option value="Transportation">Transportation</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Bills & Utilities">Bills & Utilities</option>
+                                            <option value="Healthcare">Healthcare</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <span class="field-error" id="quickCategoryError"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="quickDate">Date <span class="required">*</span></label>
+                                    <input type="date" id="quickDate" class="form-control" required>
+                                    <span class="field-error" id="quickDateError"></span>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block" id="quickSubmitBtn">
+                                    <span class="btn-text">Add Expense</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Add Expense (Opens via Header "+ Add Expense" Button) -->
+    <div class="modal-backdrop" id="addExpenseModal" aria-hidden="true" role="dialog">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title">Add New Expense</h2>
+                    <p class="modal-subtitle">Enter transaction details below</p>
+                </div>
+                <button class="modal-close-btn" id="closeModalBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <form id="modalAddForm" novalidate>
+                <div class="modal-body">
+                    <!-- Global Form Alert (for server errors) -->
+                    <div class="form-alert" id="modalFormAlert" style="display: none;"></div>
+
+                    <div class="form-group">
+                        <label for="modalDescription">Description <span class="required">*</span></label>
+                        <input type="text" id="modalDescription" class="form-control" placeholder="e.g. Monthly Grocery Shopping" required minlength="2" maxlength="150">
+                        <span class="field-error" id="modalDescError"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-half">
+                            <label for="modalAmount">Amount (INR ₹) <span class="required">*</span></label>
+                            <div class="currency-input-wrapper">
+                                <span class="currency-prefix">₹</span>
+                                <input type="number" id="modalAmount" class="form-control with-prefix" placeholder="0.00" min="0.01" step="0.01" required>
+                            </div>
+                            <span class="field-error" id="modalAmountError"></span>
+                        </div>
+
+                        <div class="form-group col-half">
+                            <label for="modalCategory">Category <span class="required">*</span></label>
+                            <select id="modalCategory" class="form-control" required>
+                                <option value="">Select category...</option>
+                                <option value="Food & Dining">🍔 Food & Dining</option>
+                                <option value="Transportation">🚗 Transportation</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Entertainment">🎬 Entertainment</option>
+                                <option value="Bills & Utilities">💡 Bills & Utilities</option>
+                                <option value="Healthcare">💊 Healthcare</option>
+                                <option value="Education">📚 Education</option>
+                                <option value="Other">🏷️ Other</option>
+                            </select>
+                            <span class="field-error" id="modalCategoryError"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalDate">Date <span class="required">*</span></label>
+                        <input type="date" id="modalDate" class="form-control" required>
+                        <span class="field-error" id="modalDateError"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveExpenseBtn">
+                        <span class="btn-text">Save Expense</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirm Delete -->
+    <div class="modal-backdrop" id="deleteConfirmModal" aria-hidden="true" role="dialog">
+        <div class="modal-card modal-sm">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title">Delete Expense?</h2>
+                    <p class="modal-subtitle">Are you sure you want to remove this transaction?</p>
+                </div>
+                <button class="modal-close-btn" id="closeDeleteModalBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-expense-preview">
+                    <div class="delete-item-title" id="deleteExpenseDesc">Description</div>
+                    <div class="delete-item-amount" id="deleteExpenseAmt">₹0.00</div>
+                </div>
+                <p class="delete-warning-text">This expense will be permanently deleted from the in-memory store.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Update Monthly Salary -->
+    <div class="modal-backdrop" id="updateSalaryModal" aria-hidden="true" role="dialog">
+        <div class="modal-card modal-sm">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title">Update Monthly Salary</h2>
+                    <p class="modal-subtitle">Enter your monthly salary or income in INR (₹)</p>
+                </div>
+                <button class="modal-close-btn" id="closeSalaryModalBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <form id="salaryUpdateForm" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputMonthlySalary">Monthly Salary (INR ₹) <span class="required">*</span></label>
+                        <div class="currency-input-wrapper">
+                            <span class="currency-prefix">₹</span>
+                            <input type="number" id="inputMonthlySalary" class="form-control with-prefix" placeholder="50000" min="1" step="1" required>
+                        </div>
+                        <span class="field-error" id="salaryInputError"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="cancelSalaryBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveSalaryBtn">
+                        <span class="btn-text">Save Salary</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
