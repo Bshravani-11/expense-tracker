@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker — Spring Boot + Java</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+      color: #fff;
+      padding: 5rem 1.5rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.04em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      opacity: 0.85;
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .hero-buttons {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer; border: 2px solid transparent;
+    }
+    .btn-white {
+      background: #fff; color: var(--primary);
+    }
+    .btn-white:hover { background: #f0f0ff; transform: translateY(-1px); }
+    .btn-outline-white {
+      background: transparent; color: #fff;
+      border-color: rgba(255,255,255,0.5);
+    }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── Main ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    /* ── Notice banner ── */
+    .notice-banner {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .notice-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .notice-text strong { display: block; color: #92400e; font-weight: 700; margin-bottom: 0.3rem; }
+    .notice-text p { color: #78350f; font-size: 0.9rem; line-height: 1.5; }
+
+    /* ── Section ── */
+    .section-title {
+      font-size: 1.5rem; font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Features grid ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: all 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .feature-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Tech stack ── */
+    .tech-row {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;
+    }
+    .tech-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── Steps ── */
+    .steps { margin-bottom: 3rem; }
+    .step {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step h4 { font-weight: 700; margin-bottom: 0.3rem; }
+    .step p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+    code {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.15rem 0.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      color: #4f46e5;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── API endpoints ── */
+    .api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    .api-table th {
+      background: #f8fafc;
+      padding: 0.85rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .api-table td { padding: 0.9rem 1rem; border-bottom: 1px solid #f1f5f9; }
+    .api-table tr:last-child td { border-bottom: none; }
+    .api-table tr:hover td { background: #fafafa; }
+    .method {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .get { background: #d1fae5; color: #065f46; }
+    .post { background: #dbeafe; color: #1e40af; }
+    .del { background: #fee2e2; color: #991b1b; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 3.5rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-badge">🎓 Beginner-Friendly Project</div>
+  <h1>💰 Expense Tracker</h1>
+  <p>A modern, full-stack expense tracking web application built with <strong>Java Spring Boot</strong> and vanilla <strong>HTML, CSS &amp; JavaScript</strong>. Track your spending in Indian Rupees (₹).</p>
+  <div class="hero-buttons">
+    <a href="https://github.com/Bshravani-11/expense-tracker" class="btn btn-white">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      View on GitHub
+    </a>
+    <a href="#run" class="btn btn-outline-white">
+      ▶ How to Run
+    </a>
+  </div>
+</section>
+
+<!-- ── Content ── -->
+<div class="container">
+
+  <!-- Notice -->
+  <div class="notice-banner">
+    <div class="notice-icon">⚠️</div>
+    <div class="notice-text">
+      <strong>This is a Spring Boot application — it requires a local Java server to run</strong>
+      <p>GitHub Pages can only host static websites. Because this app has a <strong>Java backend (Spring Boot)</strong>, the full application must be run locally on your computer. Follow the "How to Run" steps below to launch it at <code>http://localhost:8080</code>.</p>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <h2 class="section-title">✨ Features</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#ede9fe;">💸</div>
+      <h3>Monthly Salary Tracker</h3>
+      <p>Set your monthly salary, track spending vs. income, and monitor savings with a visual progress bar and color-coded status badges.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#d1fae5;">📊</div>
+      <h3>Live Dashboard</h3>
+      <p>Real-time summary cards for Total, Today's, and This Month's expenses, plus the top spending category at a glance.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#dbeafe;">➕</div>
+      <h3>Add Expenses</h3>
+      <p>Add expenses via a sidebar Quick-Add form or a full modal dialog with amount, category, date, and description.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fef3c7;">🔍</div>
+      <h3>Category Filter</h3>
+      <p>Instantly filter transactions by Food & Dining, Transportation, Shopping, Entertainment, Bills & Utilities, Healthcare, and more.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fee2e2;">🗑️</div>
+      <h3>Delete with Confirmation</h3>
+      <p>Remove unwanted expenses with a safety confirmation dialog to prevent accidental deletions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fce7f3;">🇮🇳</div>
+      <h3>INR ₹ Formatting</h3>
+      <p>All amounts are displayed in Indian Rupees with proper Indian number grouping (e.g. ₹1,45,000.00).</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#e0f2fe;">📈</div>
+      <h3>Category Breakdown</h3>
+      <p>Visual proportion bar and progress meters showing the exact spending amount and percentage for each category.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#f0fdf4;">✅</div>
+      <h3>Validation</h3>
+      <p>Both frontend and backend validate that amounts are positive and all required fields are provided, with clear error messages.</p>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <h2 class="section-title">🛠️ Technology Stack</h2>
+  <div class="tech-row">
+    <span class="tech-pill">☕ Java 21 LTS</span>
+    <span class="tech-pill">🍃 Spring Boot 3.3.4</span>
+    <span class="tech-pill">📦 Maven</span>
+    <span class="tech-pill">🌐 HTML5 / CSS3</span>
+    <span class="tech-pill">⚡ Vanilla JavaScript (ES6+)</span>
+    <span class="tech-pill">🔒 Jakarta Validation</span>
+    <span class="tech-pill">🧪 JUnit 5 + MockMvc</span>
+    <span class="tech-pill">🗄️ In-Memory Store</span>
+  </div>
+
+  <!-- How to Run -->
+  <h2 class="section-title" id="run">🚀 How to Run Locally (Windows)</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <h4>Clone the repository</h4>
+        <p>Open PowerShell and clone the project to your machine.</p>
+        <pre>git clone https://github.com/Bshravani-11/expense-tracker.git
+cd "expense-tracker"</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <h4>Check Java version</h4>
+        <p>Make sure Java 17 or higher is installed. The project was tested with <strong>Java 21</strong>.</p>
+        <pre>java -version</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <h4>Start the application</h4>
+        <p>Run using the included Maven Wrapper — no installation needed. The app auto-downloads Maven.</p>
+        <pre>.\mvnw.cmd spring-boot:run</pre>
+        <p style="margin-top:0.5rem;color:#64748b;font-size:0.875rem;">Alternatively, double-click <code>run.bat</code> in the project folder, or run the pre-built JAR:</p>
+        <pre>java -jar target\expense-tracker-1.0.0.jar</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <h4>Open in your browser</h4>
+        <p>Once you see <em>"Tomcat started on port 8080"</em>, open:</p>
+        <pre>http://localhost:8080</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- REST API -->
+  <h2 class="section-title">📡 REST API Reference</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;font-size:0.9rem;">Base URL: <code>http://localhost:8080/api/expenses</code></p>
+  <table class="api-table">
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="method get">GET</span></td>
+        <td><code>/api/expenses</code></td>
+        <td>Get all expenses (supports <code>?category=Food+%26+Dining</code> filter)</td>
+      </tr>
+      <tr>
+        <td><span class="method post">POST</span></td>
+        <td><code>/api/expenses</code></td>
+        <td>Add a new expense (JSON body: description, amount, category, date)</td>
+      </tr>
+      <tr>
+        <td><span class="method del">DELETE</span></td>
+        <td><code>/api/expenses/{id}</code></td>
+        <td>Delete an expense by ID</td>
+      </tr>
+      <tr>
+        <td><span class="method get">GET</span></td>
+        <td><code>/api/expenses/summary</code></td>
+        <td>Dashboard metrics: totals, salary, savings, category breakdown</td>
+      </tr>
+      <tr>
+        <td><span class="method get">GET</span></td>
+        <td><code>/api/expenses/salary</code></td>
+        <td>Get currently configured monthly salary</td>
+      </tr>
+      <tr>
+        <td><span class="method post">POST</span></td>
+        <td><code>/api/expenses/salary</code></td>
+        <td>Update monthly salary (<code>{"salary": 75000.00}</code>)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Data Note -->
+  <div class="notice-banner" style="background:#f0fdf4;border-color:#bbf7d0;border-left-color:#10b981;">
+    <div class="notice-icon">🗄️</div>
+    <div class="notice-text">
+      <strong style="color:#065f46;">In-Memory Data Store</strong>
+      <p style="color:#064e3b;">All expense data is stored in RAM using a thread-safe <code>ConcurrentHashMap</code>. The data resets back to sample expenses each time the server restarts. This keeps the project simple for beginners — connect a database like PostgreSQL or H2 to make data persistent.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>Built with ❤️ using <strong>Java Spring Boot</strong> &amp; <strong>Vanilla JavaScript</strong> &nbsp;|&nbsp;
+  <a href="https://github.com/Bshravani-11/expense-tracker">📂 View Source on GitHub</a></p>
+</footer>
+
+</body>
+</html>
